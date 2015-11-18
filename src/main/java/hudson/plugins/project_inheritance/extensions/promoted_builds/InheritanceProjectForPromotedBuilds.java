@@ -13,7 +13,7 @@ public class InheritanceProjectForPromotedBuilds extends InheritanceProject{
 	File originalRootDir;
 	InheritanceProject original;
 	public InheritanceProjectForPromotedBuilds (ItemGroup<?> parent, String name, boolean isTransient,InheritanceProject original, File originalRootDir) {
-		super(parent,name+"_fake", isTransient);
+		super(parent,name, isTransient);
 		this.originalRootDir = originalRootDir;
 		this.original = original;
 	}

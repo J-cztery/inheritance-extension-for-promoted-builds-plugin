@@ -20,11 +20,16 @@
 
 package hudson.plugins.project_inheritance.extensions.promoted_builds;
 
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
+
 import hudson.Extension;
 import hudson.model.JobProperty;
+
 import hudson.plugins.project_inheritance.projects.InheritanceProject;
 import hudson.plugins.project_inheritance.projects.inheritance.InheritanceSelector;
-import hudson.plugins.project_inheritance.projects.references.SimpleProjectReference;
+
 import hudson.plugins.promoted_builds.JobPropertyImpl;
 
 
@@ -35,7 +40,7 @@ import hudson.plugins.promoted_builds.JobPropertyImpl;
 @Extension
 public class JobPropertyImplSelector extends InheritanceSelector<JobProperty<?>> {
 	private static final long serialVersionUID = 6297336734737164557L;
-	
+	private static Logger logger = Logger.getLogger(JobPropertyImplSelector.class);
 
 	@Override
 	public boolean isApplicableFor(Class<?> clazz){
@@ -73,9 +78,15 @@ public class JobPropertyImplSelector extends InheritanceSelector<JobProperty<?>>
 					caller.getParent(), caller.getName(), true,  
 					caller, 
 					jobProperty.getOwner().getRootDir());
-		
-			JobPropertyOwnerSetter.setOwner(object, fakeRootProject);
-
+			try {
+				JobPropertyImpl newJobProperty = new JobPropertyImpl(fakeRootProject);
+				JobPropertyImplReflectionHelper.copyActiveProcessNames(jobProperty, newJobProperty);
+				JobPropertyImplReflectionHelper.copyProcesses(jobProperty, newJobProperty);
+				JobPropertyImplReflectionHelper.buildActiveProcessJobPropertyImpl(newJobProperty);
+				return newJobProperty;
+			} catch (Exception ex){
+				logger.error("inheritance-extension-for-promoted-builds: Error during hacking up JobPropertyImpl", ex );
+			}
 			return object;
 	}
 	
