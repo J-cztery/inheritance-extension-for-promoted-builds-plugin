@@ -24,7 +24,7 @@ import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.plugins.project_inheritance.projects.InheritanceProject;
 import hudson.plugins.project_inheritance.projects.inheritance.InheritanceSelector;
-
+import hudson.plugins.project_inheritance.projects.references.SimpleProjectReference;
 import hudson.plugins.promoted_builds.JobPropertyImpl;
 
 
@@ -69,7 +69,11 @@ public class JobPropertyImplSelector extends InheritanceSelector<JobProperty<?>>
 			JobPropertyImpl jobProperty = (JobPropertyImpl)object;
 			if (jobProperty.getOwner() instanceof InheritanceProjectForPromotedBuilds) return jobProperty;
 			
-			InheritanceProjectForPromotedBuilds fakeRootProject = new InheritanceProjectForPromotedBuilds(caller.getParent(), caller.getName(), true,  jobProperty.getOwner().getRootDir());
+			InheritanceProjectForPromotedBuilds fakeRootProject = new InheritanceProjectForPromotedBuilds(
+					caller.getParent(), caller.getName(), true,  
+					caller, 
+					jobProperty.getOwner().getRootDir());
+		
 			JobPropertyOwnerSetter.setOwner(object, fakeRootProject);
 
 			return object;
