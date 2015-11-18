@@ -68,7 +68,7 @@
 	</developers>
 
 	<!-- Link to wiki -->
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/inheritance-extension-for-promoted-builds</url>
+	<url>https://github.com/J-cztery/inheritance-extension-for-promoted-builds-plugin</url>
 	
 	<!-- Set up repository locations for Jenkins and its plugins -->
 	<repositories>
@@ -96,4 +96,5 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+	<description>This plugin fixes some problems with promoted-builds plugin (https://wiki.jenkins-ci.org/display/JENKINS/Promoted+Builds+Plugin) when promotions are configured on inheritance projects (https://wiki.jenkins-ci.org/display/JENKINS/inheritance-plugin). See also this version: (https://github.com/J-cztery/jenkins-inheritance-plugin)</description>
 </project>

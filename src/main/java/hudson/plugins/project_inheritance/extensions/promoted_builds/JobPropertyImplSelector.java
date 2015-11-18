@@ -22,15 +22,8 @@ package hudson.plugins.project_inheritance.extensions.promoted_builds;
 
 import hudson.Extension;
 import hudson.model.JobProperty;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.Descriptor.FormException;
 import hudson.plugins.project_inheritance.projects.InheritanceProject;
 import hudson.plugins.project_inheritance.projects.inheritance.InheritanceSelector;
-
-import java.io.IOException;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import hudson.plugins.promoted_builds.JobPropertyImpl;
 
@@ -42,7 +35,7 @@ import hudson.plugins.promoted_builds.JobPropertyImpl;
 @Extension
 public class JobPropertyImplSelector extends InheritanceSelector<JobProperty<?>> {
 	private static final long serialVersionUID = 6297336734737164557L;
-	private static final Logger logger = Logger.getLogger(JobPropertyImpl.class.getName());
+	
 
 	@Override
 	public boolean isApplicableFor(Class<?> clazz){
@@ -70,22 +63,16 @@ public class JobPropertyImplSelector extends InheritanceSelector<JobProperty<?>>
 	
 	@Override
 	public JobProperty<?> handleSingleton(JobProperty<?> object, InheritanceProject caller){
-		try {
 			if (!isApplicableFor(object.getClass())) return object;
-			InheritanceProjectForPromotedBuilds fakeRootProject = new InheritanceProjectForPromotedBuilds(caller.getParent(), caller.getName(), true,(JobPropertyImpl) object);
-			JobPropertyImpl jobPropertyImpl = new JobPropertyImpl(fakeRootProject);
-			fakeRootProject.setOverridenJobProperty(jobPropertyImpl);
+			if (caller.isAbstract) return object;
 			
-			return jobPropertyImpl;
-		} catch (FormException e) {
-			logger.log(Level.ERROR, e);
-		} catch (IOException e) {
-			logger.log(Level.ERROR, e);
-		} catch (Exception e){
-			logger.log(Level.ERROR, e);
-		}
-		return null;
+			JobPropertyImpl jobProperty = (JobPropertyImpl)object;
+			if (jobProperty.getOwner() instanceof InheritanceProjectForPromotedBuilds) return jobProperty;
+			
+			InheritanceProjectForPromotedBuilds fakeRootProject = new InheritanceProjectForPromotedBuilds(caller.getParent(), caller.getName(), true,  jobProperty.getOwner().getRootDir());
+			JobPropertyOwnerSetter.setOwner(object, fakeRootProject);
 
+			return object;
 	}
 	
 	
